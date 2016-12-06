@@ -1,0 +1,41 @@
+{
+  "name": "mytrace-node-api",
+  "version": "1.0.0",
+  "description": "web API for mytrace",
+  "main": "server/index.js",
+  "engines": {
+    "node": ">=6.0.0"
+  },
+  "scripts": {
+    "start": "node server/index.js",
+    "start-dev": "nodemon server/index.js",
+    "gen-migration": "bin/knex migrate:make",
+    "migrate": "bin/knex migrate:latest",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/my-trace/node-api.git"
+  },
+  "author": "Andrew Carlson <acarl005@g.ucla.edu>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/my-trace/node-api/issues"
+  },
+  "homepage": "https://github.com/my-trace/node-api#readme",
+  "dependencies": {
+    "bluebird": "^3.4.6",
+    "body-parser": "^1.15.2",
+    "cors": "^2.8.1",
+    "envalid": "^2.4.1",
+    "express": "^4.14.0",
+    "knex": "^0.12.6",
+    "lodash": "^4.17.2",
+    "pg": "^6.1.0",
+    "uuid": "^3.0.1"
+  },
+  "devDependencies": {
+    "eslint": "^3.11.1",
+    "nodemon": "^1.11.0"
+  }
+}
