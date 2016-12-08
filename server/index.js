@@ -13,6 +13,7 @@ const facebook = require('./services/facebook')
 
 function start() {
   const app = koa()
+  // for encrypting the cookie. the cookie isn't acutally used for anything right now
   app.keys = [ env.SESSION_KEY ]
 
   app.use(errorHandler)
@@ -20,6 +21,7 @@ function start() {
   app.use(cors())
   app.use(bodyParser())
 
+  // a super easy oauth client
   const grant = new Grant({
     server: {
       protocol: 'http',
@@ -35,6 +37,7 @@ function start() {
 
   app.use(mount(grant))
 
+  // a simple health check route
   router.get('/health', function() {
     this.body = 'healthy'
   })
@@ -52,6 +55,7 @@ function start() {
   return app
 }
 
+// global error handler
 function* errorHandler(next) {
   try {
     yield next
@@ -62,6 +66,9 @@ function* errorHandler(next) {
   }
 }
 
+// similar to the if __name__ == '__main__' idiom in python
+// if this is the main module, run the server with the real context and bind to a port
+// otherwise we are importing the module somewhere, probably for tests. so we want to stub out things like the database, request library, or the time
 if (!module.parent) {
   const knex = require('knex')({
     client: 'pg',

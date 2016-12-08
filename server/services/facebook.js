@@ -2,6 +2,7 @@ const env = require('../../env')
 
 const User = require('../models/user')
 
+// ask facebook if the token they gave us is valid
 exports.auth = function* (next) {
   const token = this.get('Authorization')
   if (!token) {
@@ -28,6 +29,7 @@ exports.auth = function* (next) {
   }
 }
 
+// sign in via oauth to create a user in postgres
 exports.getUser = function* (next) {
   const token = this.query.access_token
   const request = this.app.context.request

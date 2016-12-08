@@ -5,13 +5,16 @@ class Point {
   constructor() {}
 }
 
+// get all the points in a certain interval
 Point.bulkGet = function(knex, account_id, lower, upper) {
   lower = new Date(lower).toISOString()
   upper = new Date(upper).toISOString()
   return knex('points').select().where({ account_id }).whereBetween('created_at', [ lower, upper ])
 }
 
+// insert a bunch of points
 Point.bulkInsert = Promise.coroutine(function* (knex, points, userId, ctx) {
+  // make it one big, flat array so that the knex library can interpolate the values. it expects an array
   const flatPoints = _.flatMap(points, p => {
     const createdAt = new Date(p.created_at)
     if (createdAt < new Date('2015-01-01')) {
