@@ -6,7 +6,9 @@ exports.up = function(knex) {
       facebook_id BIGINT NOT NULL,
       name VARCHAR NOT NULL,
       email VARCHAR NOT NULL,
-      created_at TIMESTAMPTZ DEFAULT now()
+      created_at TIMESTAMPTZ DEFAULT now(),
+      UNIQUE (email),
+      UNIQUE (facebook_id)
     );
 
     DROP TABLE IF EXISTS points;

@@ -1,30 +1,78 @@
-const express = require('express')
-const cors = require('cors')
-const bodyParser = require('body-parser')
+const koa = require('koa')
+const cors = require('koa-cors')
+const bodyParser = require('koa-bodyparser')
+const router = require('koa-router')()
+const mount = require('koa-mount')
+const session = require('koa-session')
+const Grant = require('grant-koa')
 
 const env = require('../env')
 const userCtrl = require('./controllers/user')
 const pointCtrl = require('./controllers/point')
+const facebook = require('./services/facebook')
 
-const app = express()
-app.use(cors())
-app.use(bodyParser.json())
+function start() {
+  const app = koa()
+  app.keys = [ env.SESSION_KEY ]
 
-app.get('/health', (req, res) => res.write('healthy') && res.end())
+  app.use(errorHandler)
+  app.use(session(app))
+  app.use(cors())
+  app.use(bodyParser())
 
-app.post('/users', userCtrl.create.bind(app))
+  const grant = new Grant({
+    server: {
+      protocol: 'http',
+      host: 'localhost:3333'
+    },
+    facebook: {
+      key: env.FB_APP_KEY,
+      secret: env.FB_APP_SECRET,
+      scope: [ 'public_profile', 'user_friends', 'email' ],
+      callback: '/facebook/callback'
+    }
+  })
 
-app.get('/points', pointCtrl.index.bind(app))
-app.post('/points', pointCtrl.create.bind(app))
+  app.use(mount(grant))
+
+  router.get('/health', function() {
+    this.body = 'healthy'
+  })
+
+  router.get('/facebook/callback', facebook.getUser, userCtrl.createFromOAuth)
+
+  router.post('/users', userCtrl.create)
+
+  router.get('/points', facebook.auth, pointCtrl.index)
+  router.post('/points', facebook.auth, pointCtrl.create)
+
+  app.use(router.routes())
+  app.use(router.allowedMethods())
+  
+  return app
+}
+
+function* errorHandler(next) {
+  try {
+    yield next
+  } catch (err) {
+    this.status = err.status || 500
+    this.body = err.message
+    this.app.emit('error', err, this)
+  }
+}
 
 if (!module.parent) {
   const knex = require('knex')({
     client: 'pg',
     connection: env.PG_URL
   })
-  app.set('db', knex)
+  const app = start()
+  app.context.db = knex
+  app.context.request = require('request-promise')
+  app.context.now = Date.now
   app.listen(env.PORT, () => console.log(`listening at http://localhost:${env.PORT}`))
 }
 
-module.exports = app
+module.exports = start
 

@@ -5,10 +5,30 @@ class Point {
   constructor() {}
 }
 
-Point.bulkInsert = Promise.coroutine(function* (knex, points) {
-  const flatPoints = _.flatMap(points, p =>
-    [ p.id, p.lat, p.lng, p.alt, p.floor_level, p.vertical_accuracy, p.horizontal_accuracy, p.account_id, new Date(p.created_at).toISOString() ]
-  )
+Point.bulkGet = function(knex, account_id, lower, upper) {
+  lower = new Date(lower).toISOString()
+  upper = new Date(upper).toISOString()
+  return knex('points').select().where({ account_id }).whereBetween('created_at', [ lower, upper ])
+}
+
+Point.bulkInsert = Promise.coroutine(function* (knex, points, userId, ctx) {
+  const flatPoints = _.flatMap(points, p => {
+    const createdAt = new Date(p.created_at)
+    if (createdAt < new Date('2015-01-01')) {
+      ctx.throw(400, 'this date is before the year 2015: ' + p.created_at)
+    }
+    return [
+      p.id,
+      p.lat,
+      p.lng,
+      p.alt,
+      p.floor_level,
+      p.vertical_accuracy,
+      p.horizontal_accuracy,
+      userId,
+      createdAt.toISOString()
+    ]
+  })
   .map(d => d || null)
 
   // build up the parameter string

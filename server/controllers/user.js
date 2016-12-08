@@ -1,17 +1,29 @@
-const Promise = require('bluebird')
 const User = require('../models/user')
 
-exports.create = Promise.coroutine(function* (req, res) {
-  const knex = this.get('db')
-  const newUser = new User(req.body)
-  const oldUser = yield knex('accounts').first().where({ email: newUser.email })
-  console.log({ oldUser })
+exports.create = function* () {
+  const knex = this.app.context.db
+  const newUser = new User(this.request.body, this)
+  const oldUser = yield User.findByEmail(knex, newUser.email)
   if (oldUser) {
-    res.status(400)
-    return res.json({ message: 'user already exists' })
+    this.status = 400
+    this.body = 'user already exists'
+  } else {
+    yield User.create(knex, newUser)
+    this.status = 201
+    this.type = 'json'
+    this.body = newUser
   }
-  yield knex('accounts').insert(newUser)
-  res.status(201)
-  res.json(newUser)
-})
+}
+
+exports.createFromOAuth = function* () {
+  const newUser = new User(this.user, this)
+  const knex = this.app.context.db
+  const oldUser = yield User.findByEmail(knex, newUser.email)
+  if (!oldUser) {
+    yield User.create(knex, newUser)
+  }
+  newUser.token = this.token
+  this.type = 'json'
+  this.body = newUser
+}
 
