@@ -53,7 +53,7 @@ headers:
 body: json-array of the attributes for the Point (see model section)
 ```
 
-```
+```js
 [ { lat: 37.78627132548483,
     lng: -122.3976185810548,
     alt: 12.39452648162842,
@@ -61,7 +61,7 @@ body: json-array of the attributes for the Point (see model section)
     horizontal_accuracy: 65,
     vertical_accuracy: 10,
     account_id: '3C332578-2A1F-40D5-9A16-EB9F7CE724DF',
-    created_at: 1472717834.417828 },
+    created_at: 1481191892160 },
   { lat: 37.78627132548483,
     lng: -122.3976185810548,
     alt: 12.39452648162842,
@@ -69,7 +69,7 @@ body: json-array of the attributes for the Point (see model section)
     horizontal_accuracy: 65,
     vertical_accuracy: 10,
     account-id: '4ABCE83B-4557-4556-9421-51E0238656A7',
-    created_at: 1472717834.417852 } ]
+    created_at: '2016-12-08T10:11:58.933Z' } ]
 ```
 
 ### GET /points
@@ -104,6 +104,6 @@ querystring:
 | floor_level | int |
 | vertical_accuracy | double |
 | horizontal_accuracy | double |
-| account_id | BigInt |
+| account_id | uuid |
 | created_at | timestamptz |
 
