@@ -6,7 +6,6 @@ exports.create = function* () {
   const oldUser = yield User.findByFacebook(knex, newUser.facebook_id)
 
   if (oldUser) {
-    // this.status = 400
     this.status = 201
     this.body = 'user already exists'
   } else {
