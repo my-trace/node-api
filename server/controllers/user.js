@@ -3,9 +3,11 @@ const User = require('../models/user')
 exports.create = function* () {
   const knex = this.app.context.db
   const newUser = new User(this.request.body, this)
-  const oldUser = yield User.findByEmail(knex, newUser.email)
+  const oldUser = yield User.findByFacebook(knex, newUser.facebook_id)
+
   if (oldUser) {
-    this.status = 400
+    // this.status = 400
+    this.status = 201
     this.body = 'user already exists'
   } else {
     yield User.create(knex, newUser)

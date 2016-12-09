@@ -33,7 +33,9 @@ exports.auth = function* (next) {
   }
   if (reply.data.is_valid) {
     const knex = this.app.context.db
-    this.facebookId = parseInt(reply.data.user_id)
+    this.facebookId = reply.data.user_id
+    // console.log(this.facebookId);
+    // console.log(yield User.findByFacebook(knex, '10156377004550525'));
     this.userId = (yield User.findByFacebook(knex, this.facebookId)).id
     yield next
   } else {

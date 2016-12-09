@@ -19,13 +19,13 @@ function start() {
   app.use(errorHandler)
   app.use(session(app))
   app.use(cors())
-  app.use(bodyParser())
+  app.use(bodyParser({jsonLimit: '50mb'}))
 
   // a super easy oauth client
   const grant = new Grant({
     server: {
       protocol: 'http',
-      host: 'localhost:3333'
+      host: env.HOST_URL
     },
     facebook: {
       key: env.FB_APP_KEY,
