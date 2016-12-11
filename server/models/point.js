@@ -16,18 +16,19 @@ Point.bulkGet = function(knex, account_id, lower, upper) {
 Point.bulkInsert = Promise.coroutine(function* (knex, points, userId, ctx) {
   // make it one big, flat array so that the knex library can interpolate the values. it expects an array
   const flatPoints = _.flatMap(points, p => {
-    const createdAt = new Date(p.created_at)
+    const createdAt = new Date(p.timestamp)
     if (createdAt < new Date('2015-01-01')) {
       ctx.throw(400, 'this date is before the year 2015: ' + p.created_at)
     }
+    // maps client side variables to server side
     return [
-      p.id,
-      p.lat,
-      p.lng,
-      p.alt,
-      p.floor_level,
-      p.vertical_accuracy,
-      p.horizontal_accuracy,
+      p.uuid,
+      p.latitude,
+      p.longitude,
+      p.altitude,
+      p.floorLevel,
+      p.verticalAccuracy,
+      p.horizontalAccuracy,
       userId,
       createdAt.toISOString()
     ]
