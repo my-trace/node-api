@@ -65,7 +65,7 @@ test('POST /users does not duplicate an email', function* (t) {
     .post('/users')
     .set('Content-Type', 'application/json')
     .send({ name: 'Andy Carlson', email: '2yinyang2@gmail.com', facebook_id: '1119072518111932' })
-    .expect(400)
+    .expect(201)
 })
 
 test('POST /users rejects an improper email', function* (t) {
@@ -86,19 +86,19 @@ test('POST /points creates points for a user', function* (t) {
   const newPoints = [
     // this point is a duplicate, should not get saved
     {
-      id: 'e54bc9e0-bd06-11e6-bb4d-0f490bb3511f',
-      lat: 34.6507534,
-      lng: -118.1868112,
-      alt: 20.8975256703,
-      created_at: '2016-12-08 04:44:08.915539'
+      uuid: 'e54bc9e0-bd06-11e6-bb4d-0f490bb3511f',
+      latitude: 34.6507534,
+      longitude: -118.1868112,
+      altitude: 20.8975256703,
+      timestamp: '2016-12-08 04:44:08.915539'
     },
     // but this one is new
     {
-      id: 'fabc304a-bd14-11e6-ab3e-3b9300e9a1b8',
-      lat: 34.0753423,
-      lng: -118.6811210,
-      alt: 20.7525670344,
-      created_at: '2016-12-08 04:44:08.915539'
+      uuid: 'fabc304a-bd14-11e6-ab3e-3b9300e9a1b8',
+      latitude: 34.0753423,
+      longitude: -118.6811210,
+      altitude: 20.7525670344,
+      timestamp: '2016-12-08 04:44:08.915539'
     }
   ]
   const res = yield agent(app)
@@ -116,11 +116,11 @@ test('POST /points requires a recent date', function* (t) {
   app.context.request = reqStub
   const newPoints = [
     {
-      id: 'e54bc9e0-bd06-11e6-bb4d-0f490bb3511f',
-      lat: 34.6507534,
-      lng: -118.1868112,
-      alt: 20.8975256703,
-      created_at: '1980-12-08 04:44:08.915539'
+      uuid: 'e54bc9e0-bd06-11e6-bb4d-0f490bb3511f',
+      latitude: 34.6507534,
+      longitude: -118.1868112,
+      altitude: 20.8975256703,
+      timestamp: '1980-12-08 04:44:08.915539'
     }
   ]
   const res = yield agent(app)
