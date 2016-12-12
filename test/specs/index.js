@@ -49,7 +49,7 @@ test('GET /facebook/callback should not duplicate an existing user', function* (
 
 test('POST /users registers a new user', function* (t) {
   const app = t.context.app
-  const res = yield agent(app)
+  yield agent(app)
     .post('/users')
     .set('Content-Type', 'application/json')
     .send({ name: 'Alex Zai', email: 'azai91@gmail.com', facebook_id: '1119072518111931' })
@@ -61,7 +61,7 @@ test('POST /users registers a new user', function* (t) {
 
 test('POST /users does not duplicate an email', function* (t) {
   const app = t.context.app
-  const res = yield agent(app)
+  yield agent(app)
     .post('/users')
     .set('Content-Type', 'application/json')
     .send({ name: 'Andy Carlson', email: '2yinyang2@gmail.com', facebook_id: '1119072518111932' })
@@ -70,7 +70,7 @@ test('POST /users does not duplicate an email', function* (t) {
 
 test('POST /users rejects an improper email', function* (t) {
   const app = t.context.app
-  const res = yield agent(app)
+  yield agent(app)
     .post('/users')
     .set('Content-Type', 'application/json')
     .send({ name: 'Andy Carlson', email: '2yinyang2', facebook_id: '1119072518111932' })
@@ -101,7 +101,7 @@ test('POST /points creates points for a user', function* (t) {
       timestamp: '2016-12-08 04:44:08.915539'
     }
   ]
-  const res = yield agent(app)
+  yield agent(app)
     .post('/points')
     .set('Content-Type', 'application/json')
     .set('Authorization', 'andyToken')
@@ -123,7 +123,7 @@ test('POST /points requires a recent date', function* (t) {
       timestamp: '1980-12-08 04:44:08.915539'
     }
   ]
-  const res = yield agent(app)
+  yield agent(app)
     .post('/points')
     .set('Content-Type', 'application/json')
     .set('Authorization', 'andyToken')
@@ -145,7 +145,7 @@ test('GET /points should default to last week of any points', function* (t) {
 test('GET /points should not work without auth', function* (t) {
   const app = t.context.app
   app.context.request = reqStub
-  const res = yield agent(app)
+  yield agent(app)
     .get('/points')
     .expect(401)
 })

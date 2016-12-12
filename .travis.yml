@@ -16,6 +16,7 @@ deploy:
 services:
   - postgresql
 before_script:
+  - npm run lint
   - psql -c 'create database travis_dev;' -U postgres
   - npm run migrate
 env:
