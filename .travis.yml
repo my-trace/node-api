@@ -23,5 +23,3 @@ env:
     FB_APP_KEY=test_key
     FB_APP_SECRET=test_secret
     HOST=localhost:3333
-addons:
-  postgresql: "9.5"
