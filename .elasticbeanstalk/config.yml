@@ -1,0 +1,11 @@
+branch-defaults:
+  master:
+    environment: mytrace-api
+    group_suffix: null
+global:
+  application_name: mytrace-api
+  default_ec2_keyname: aws-eb
+  default_platform: Node.js
+  default_region: us-west-1
+  profile: null
+  sc: git
