@@ -3,7 +3,7 @@ deploy:
   access_key_id: AKIAIP2TXU5AFOO6KQGQ
   secret_access_key:
     secure: owEtOB2kRwJoweiVpa/dJ3YeG1K1DNR6rhUyTbWrwKOu89jZYJ/Vm4apQ2R26EJ+Z/fzbFD9uVy68HdRP96z+3KZLBgptdop7B7PEKx/7s3cJDBgMo6ALwXjyekzl7Dzl2LFtzjOvr+jrzCverlLtEiUHjPc60Ow9YUZPgyW/RnPTf9j9FGFfnuH3r2Awm7epaIoyrFSPqZMcWRroGKEvehdKuO0mn87mFsUAl5A0OQDnrlvVqC4/Qw6FV1FR+FPbJekrq3bJA4HnMBJdNdBER6VipcmMb4bI3otuWfp53GdYb0afZs403cWwldrc6V9TWcLtVzrByS7r5XQEsn5PUvmz+9zGkD5i3jyhwpEvDP5sQj+l9JdAN9lXf1lcDYb3bCRkxicJcdifysCPef5gOhIeo/DqMZs0Rm7C2gl/ac2mgd9VKDyHnHZXRFdGrfDvdhai6bdcH3U1Gf7Lk4CdYice30lmey6j6/FOeCFL1aZmJxHTGYDsJNOAJTtdC0GhGthMn33UyyWPMUOfAoD78jEHFe/kXMbXbqEvYJqJRoLPt74rHQsxqPUwIn1AEW8719VRGtsiNYo2wvY8bcUD5nc75rXHhkhVgtkwJAdaTfBY+v1qxEHMj1MgVA6/ShMJ/2vkvocbV1aXptb/YnLa5DUdslCQ/GoIzY/TjP7f6w=
-  region: us-west-2
+  region: us-west-1
   app: mytrace-api
   env: mytrace-api
   on:
