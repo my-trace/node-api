@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-- '6.9.1'
+- 6.9.1
 deploy:
   provider: elasticbeanstalk
   access_key_id: AKIAIP2TXU5AFOO6KQGQ
@@ -12,3 +12,9 @@ deploy:
   on:
     repo: my-trace/node-api
     branch: master
+env:
+  global:
+    PG_URL=postgres://localhost/trace-dev
+    FB_APP_KEY=test_key
+    FB_APP_SECRET=test_secret
+    HOST=localhost:3333
