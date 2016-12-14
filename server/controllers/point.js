@@ -2,8 +2,26 @@ const Point = require('../models/point')
 
 exports.create = function* () {
   const knex = this.app.context.db
-  yield Point.bulkInsert(knex, this.request.body, this.userId, this)
-  this.status = 201
+  logger.info({
+    'method': 'controllers.point.create',
+    'msg': 'saving points',
+    'user_id': this.userId,
+  })
+  try {
+    yield Point.bulkInsert(knex, this.request.body, this.userId, this)
+    logger.info({
+      'method': 'controllers.point.create',
+      'msg': 'successfully saved points'
+      'user_id': this.userId,
+    })
+    this.status = 201  
+  } catch (err) {
+    logger.error({
+      'method': 'controllers.point.create',
+      'msg': 'error saving points',
+      'user_id': this.userId,
+    })
+  }
 }
 
 exports.index = function* () {

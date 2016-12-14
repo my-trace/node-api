@@ -1,4 +1,5 @@
 const User = require('../models/user')
+const logger = require('./server/util/logger')
 
 exports.create = function* () {
   const knex = this.app.context.db
@@ -9,6 +10,13 @@ exports.create = function* () {
     this.status = 201
     this.body = 'user already exists'
   } else {
+    logger.info({
+      'method': 'controllers.user.create',
+      'msg': 'creating user',
+      'name': newUser.name,
+      'email': newUser.email,
+      'facebook_id': newUser.facebook_id,
+    })
     yield User.create(knex, newUser)
     this.status = 201
     this.type = 'json'
