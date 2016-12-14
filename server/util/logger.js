@@ -1,5 +1,5 @@
 const winston = require('winston')
-const env = require('../env')
+const env = require('../../env')
 
 require('winston-papertrail').Papertrail
 
