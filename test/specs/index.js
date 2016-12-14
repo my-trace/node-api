@@ -4,11 +4,15 @@ const start = require('../../server/index')
 const agent = require('supertest-koa-agent')
 const reqStub = require('../stubs/request')
 
+
 test.beforeEach(function* (t) {
   t.context = yield createTestDB()
   const app = t.context.app = start()
   app.context.now = () => 1481188482437
   app.context.db = t.context.knex
+  mock('./../../server/util/logger', { info: function() {
+    console.log('http.request called');
+  }});
 })
 
 test.always.afterEach(function* (t) {

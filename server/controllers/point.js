@@ -1,5 +1,5 @@
 const Point = require('../models/point')
-const logger = require('./server/util/logger')
+const logger = require('./../util/logger')
 
 exports.create = function* () {
   const knex = this.app.context.db
@@ -22,6 +22,7 @@ exports.create = function* () {
       'msg': 'error saving points',
       'user_id': this.userId,
     })
+    this.status = 400
   }
 }
 

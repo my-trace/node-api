@@ -1,5 +1,5 @@
 const User = require('../models/user')
-const logger = require('./server/util/logger')
+const logger = require('./../util/logger')
 
 exports.create = function* () {
   const knex = this.app.context.db

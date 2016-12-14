@@ -12,5 +12,11 @@ const logger = new winston.Logger({
   transports: [winstonPapertrail]
 })
 
+const mock_logger = {
+  info: function() {},
+  warn: function() {},
+  error: function() {},
+  debug: function() {},
+}
 
-module.exports = logger
+module.exports = process.env.NODE_ENV == 'test' ? mock_logger : logger
