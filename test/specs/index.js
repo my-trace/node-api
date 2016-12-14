@@ -4,7 +4,6 @@ const start = require('../../server/index')
 const agent = require('supertest-koa-agent')
 const reqStub = require('../stubs/request')
 
-
 test.beforeEach(function* (t) {
   t.context = yield createTestDB()
   const app = t.context.app = start()
