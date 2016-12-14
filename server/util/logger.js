@@ -1,4 +1,5 @@
 const winston = require('winston')
+const env = require('../env')
 
 require('winston-papertrail').Papertrail
 
@@ -17,13 +18,12 @@ const consoleLogger = new winston.transports.Console({
 
 const transports = [consoleLogger]
 
-if (process.env.NODE_ENV == 'production') {
+if (env.NODE_ENV == 'production') {
   transports.push(winstonPapertrail)
 }
 
 const logger = new winston.Logger({
   transports: transports
 })
-
 
 module.exports = logger
