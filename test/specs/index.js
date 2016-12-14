@@ -10,9 +10,6 @@ test.beforeEach(function* (t) {
   const app = t.context.app = start()
   app.context.now = () => 1481188482437
   app.context.db = t.context.knex
-  mock('./../../server/util/logger', { info: function() {
-    console.log('http.request called');
-  }});
 })
 
 test.always.afterEach(function* (t) {

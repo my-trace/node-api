@@ -12,7 +12,7 @@
     "gen-migration": "bin/knex migrate:make",
     "migrate": "bin/knex migrate:latest",
     "fixtures": "node scripts/load-fixtures.js",
-    "test": "NODE_ENV=test ava",
+    "test": "ava",
     "lint": "node_modules/.bin/eslint ."
   },
   "ava": {

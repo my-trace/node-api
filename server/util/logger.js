@@ -8,15 +8,22 @@ const winstonPapertrail = new winston.transports.Papertrail({
   colorize: true,
 })
 
-const logger = new winston.Logger({
-  transports: [winstonPapertrail]
+const consoleLogger = new winston.transports.Console({
+  timestamp: function() {
+    return new Date().toString()
+  },
+  colorize: true
 })
 
-const mock_logger = {
-  info: function() {},
-  warn: function() {},
-  error: function() {},
-  debug: function() {},
+const transports = [consoleLogger]
+
+if (process.env.NODE_ENV == 'production') {
+  transports.push(winstonPapertrail)
 }
 
-module.exports = process.env.NODE_ENV == 'test' ? mock_logger : logger
+const logger = new winston.Logger({
+  transports: transports
+})
+
+
+module.exports = logger
