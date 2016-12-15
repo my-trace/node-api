@@ -20,13 +20,10 @@ const transports = [consoleLogger]
 
 if (env.NODE_ENV == 'production') {
   transports.push(winstonPapertrail)
-  console.log('adding winston logger')
 }
 
 const logger = new winston.Logger({
   transports: transports
 })
-
-console.log('adding logger')
 
 module.exports = logger

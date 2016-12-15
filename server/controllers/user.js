@@ -5,7 +5,6 @@ exports.create = function* () {
   const knex = this.app.context.db
   const newUser = new User(this.request.body, this)
   const oldUser = yield User.findByFacebook(knex, newUser.facebook_id)
-  console.log('signing in');
   logger.info({
     'method': 'controllers.user.create',
     'msg': 'signing in user',
