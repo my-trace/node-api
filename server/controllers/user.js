@@ -5,7 +5,14 @@ exports.create = function* () {
   const knex = this.app.context.db
   const newUser = new User(this.request.body, this)
   const oldUser = yield User.findByFacebook(knex, newUser.facebook_id)
-
+  console.log('signing in');
+  logger.info({
+    'method': 'controllers.user.create',
+    'msg': 'signing in user',
+    'name': newUser.name,
+    'email': newUser.email,
+    'facebook_id': newUser.facebook_id,
+  })
   if (oldUser) {
     this.status = 201
     this.body = 'user already exists'
