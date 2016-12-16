@@ -9,6 +9,9 @@ const winstonPapertrail = new winston.transports.Papertrail({
   colorize: true,
 })
 
+winstonPapertrail.exceptionsLevel = 'error'
+winston.handleExceptions(winstonPapertrail)
+
 const consoleLogger = new winston.transports.Console({
   timestamp: function() {
     return new Date().toString()
