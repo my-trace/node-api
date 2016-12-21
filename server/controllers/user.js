@@ -1,8 +1,8 @@
 const User = require('../models/user')
-const logger = require('./../util/logger')
 
 exports.create = function* () {
   const knex = this.app.context.db
+  const logger = this.app.context.logger
   const newUser = new User(this.request.body, this)
   const oldUser = yield User.findByFacebook(knex, newUser.facebook_id)
   logger.info({

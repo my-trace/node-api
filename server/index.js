@@ -19,13 +19,13 @@ function start() {
   app.use(errorHandler)
   app.use(session(app))
   app.use(cors())
-  app.use(bodyParser({jsonLimit: '50mb'}))
+  app.use(bodyParser({ jsonLimit: '50mb' }))
 
   // a super easy oauth client
   const grant = new Grant({
     server: {
       protocol: 'http',
-      host: env.HOST_URL
+      host: env.HOST
     },
     facebook: {
       key: env.FB_APP_KEY,
@@ -78,6 +78,7 @@ if (!module.parent) {
   app.context.db = knex
   app.context.request = require('request-promise')
   app.context.now = Date.now
+  app.context.logger = require('./util/logger')
   app.listen(env.PORT, () => console.log(`listening at http://localhost:${env.PORT}`))
 }
 
