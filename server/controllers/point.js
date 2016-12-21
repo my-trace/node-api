@@ -1,8 +1,8 @@
 const Point = require('../models/point')
-const logger = require('./../util/logger')
 
 exports.create = function* () {
   const knex = this.app.context.db
+  const logger = this.app.context.logger
   logger.info({
     'method': 'controllers.point.create',
     'msg': 'saving points',

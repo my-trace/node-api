@@ -9,6 +9,10 @@ test.beforeEach(function* (t) {
   const app = t.context.app = start()
   app.context.now = () => 1481188482437
   app.context.db = t.context.knex
+  app.context.logger = {
+    info: () => {},
+    error: () => {}
+  }
 })
 
 test.always.afterEach(function* (t) {
