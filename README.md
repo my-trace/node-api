@@ -19,7 +19,7 @@ Just go to `/connect/facebook` in the browser and you will be in the database! Y
 $ npm run migrate
 
 # generate new migration file in /migrations
-$ npm run gen-migrate
+$ npm run gen-migrate <migration-name>
 
 # load fixture data (from /test/fixtures) into tables (after migrating)
 $ npm run fixtures

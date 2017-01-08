@@ -13,7 +13,12 @@ function reverseGeocode(lat, lng) {
   }
   return request(reqOpts)
     .then(JSON.parse)
-    .then(res => res.results[0])
+    .then(res => {
+      if (res.status !== 'OK') {
+        throw new Error(JSON.stringify(res, null, 2))
+      }
+      return res.results[0]
+    })
 }
 
 /*
