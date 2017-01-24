@@ -1,23 +1,28 @@
-const assert = require('assert')
 const Promise = require('bluebird')
 const moment = require('moment')
-const { curry } = require('lodash')
+const { curry, chain, map } = require('lodash')
 
 const env = require('../env')
 const Cluster = require('./Cluster')
 const reverseGeocode = require('./reverse-geocode')
 
+// they hyperparameters we'll need to tune
+const EPSILON = 0.00003
+const DURATION_LIMIT = 500000
+
 const getUsers = Promise.coroutine(function* (knex, date) {
+  // get a list of all the users
+  // omg ALL of them? yes all of them. deal with it
   const users = yield knex('accounts')
     .select('id', 'checked_at', 'name')
     .where('checked_at', '<', date)
     .orWhere('checked_at', null)
 
-  yield Promise.map(users.filter(u => u.name === 'Andy Carlson'), clusterPoints(knex, date), { concurrency: 8 })
+  // run the clusterPoints function for each. have 8 running concurrently
+  yield Promise.map(users, clusterPoints(knex, date), { concurrency: 8 })
 })
 
 const clusterPoints = curry(Promise.coroutine(function* (knex, date, user) {
-
   // determine where to start the window of points
   let start
   // maybe we've never checked this user before
@@ -36,6 +41,7 @@ const clusterPoints = curry(Promise.coroutine(function* (knex, date, user) {
     start = moment(user.checked_at)
   }
 
+
   // the end date should be one day after the start, unless one day later is in the future...
   let end = moment(start).add(1, 'd')
   end = moment(Math.min(end, date))
@@ -45,55 +51,87 @@ const clusterPoints = curry(Promise.coroutine(function* (knex, date, user) {
     .whereBetween('created_at', [ start, end ])
     .orderBy('created_at')
 
-  assert(points.length, 'must not be 0 points')
-  // cast those stringy numerics to JavaScript numbers
-  points.forEach(points => {
-    points.lat = parseFloat(points.lat)
-    points.lng = parseFloat(points.lng)
-  })
+  console.log(`running for user ${user.name} from ${start} to ${end}`)
 
-  let clusters = [ new Cluster(env.EPSILON, points.shift()) ]
-  for (let point of points) {
-    const lastCluster = clusters[clusters.length - 1]
-    if (lastCluster.contains(point)) {
-      lastCluster.push(point)
-    } else {
-      clusters.push(new Cluster(env.EPSILON, point))
+  if (points.length) {
+    // cast those stringy numerics to JavaScript numbers
+    points.forEach(points => {
+      points.lat = parseFloat(points.lat)
+      points.lng = parseFloat(points.lng)
+    })
+
+    // this is the secret sauce. the sauce tastes like shit
+    // EPSILON is an arbitrary radius within which new points are considered "within the boundary of the cluster"
+    // its a distance from the center of the cluster. we'll need to play with it
+    let clusters = [ new Cluster(EPSILON, points.shift()) ]
+    for (let point of points) {
+      const lastCluster = clusters[clusters.length - 1]
+      // add the points into the last cluster if it is near enough
+      if (lastCluster.contains(point)) {
+        lastCluster.push(point)
+      // otherwise, start a new cluster
+      } else {
+        clusters.push(new Cluster(EPSILON, point))
+      }
     }
+
+    // remove clusters of 1
+    clusters = clusters.filter(cluster => cluster.points.length > 1)
+    // remove anything if they weren't there for long enough
+    // DURATION_LIMIT is another arbitrary hyperparameter to play with
+    clusters = clusters.filter(cluster => cluster.duration > DURATION_LIMIT)
+
+    // call the Google places API
+    let places = yield Promise.map(clusters, cluster => {
+      const center = cluster.center()
+      return reverseGeocode(center.lat, center.lng)
+    })
+
+    // the cross linking table rows
+    const links = places.map((place, i) => ({
+      account_id: user.id,
+      place_id: place.id,
+      duration: clusters[i].duration,
+      started_at: clusters[i].startedAt()
+    }))
+
+    // first get only the unique places, then map to the table rows
+    let uniqPlaces = chain(places).uniqBy('id').map(place => ({
+      id: place.id,
+      lat: place.geometry.location.lat,
+      lng: place.geometry.location.lng,
+      icon: place.icon,
+      name: place.name,
+      place_id: place.place_id,
+      types: JSON.stringify(place.types)
+    })).value()
+
+    console.log(`user ${user.name} was at \n${map(uniqPlaces, 'name').join(',\n')}`)
+
+    // see if DB already contains any of these places
+    const placeIds = map(uniqPlaces, 'id')
+    let existingPlaces = yield knex('places').select('id').whereIn('id', placeIds)
+    existingPlaces = new Set(map(existingPlaces, 'id'))
+    // if so, filter out those duplicates
+    uniqPlaces = uniqPlaces.filter(place => !existingPlaces.has(place.id))
+
+    yield knex.batchInsert('places', uniqPlaces)
+    yield knex.batchInsert('accounts_places_links', links)
   }
 
-  // remove clusters of 1
-  clusters = clusters.filter(cluster => cluster.points.length > 1)
-  clusters = clusters.filter(cluster => cluster.duration > 500000)
+  // update the user that we've checked their points up to `end`
+  yield knex('accounts').where('id', user.id).update({ checked_at: end })
+  user.checked_at = end
 
-  let places = yield Promise.map(clusters, cluster => {
-    const center = cluster.center()
-    return reverseGeocode(center.lat, center.lng)
-  })
-
-  places = places.map(place => ({
-    id: place.id,
-    lat: place.geometry.location.lat,
-    lng: place.geometry.location.lng,
-    icon: place.icon,
-    name: place.name,
-    place_id: place.place_id,
-    types: JSON.stringify(place.types)
-  }))
-  console.log(places)
-
-  yield knex.batchInsert('places', places)
-
-  const links = places.map((place, i) => ({
-    account_id: user.id,
-    place_id: place.id,
-    duration: clusters[i].duration,
-    startedAt: clusters[i].startedAt()
-  }))
-
-  yield knex.batchInsert('accounts_places_links', links)
+  // we just checked one day's worth of points
+  // if we need to check the next day, recurse.
+  if (end < moment().subtract(1, 'day')) {
+    return clusterPoints(knex, date, user)
+  }
 }), 3)
 
+// just kick it off in this file.
+// eventually this will be scheduled daily
 if (!module.parent) {
   const knex = require('knex')({
     client: 'pg',
@@ -101,6 +139,7 @@ if (!module.parent) {
   })
   getUsers(knex, new Date)
   .catch(err => {
-    throw err
+    console.error(err)
+    process.exit(1)
   })
 }

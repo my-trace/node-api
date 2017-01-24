@@ -6,7 +6,7 @@ exports.up = function(knex) {
       account_id UUID REFERENCES accounts (id),
       place_id VARCHAR REFERENCES places (id),
       duration BIGINT,
-      startedAt TIMESTAMPTZ
+      started_at TIMESTAMPTZ
     );
   `)
 }

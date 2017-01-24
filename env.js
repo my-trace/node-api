@@ -7,8 +7,7 @@ const env = envalid.cleanEnv(process.env, {
   FB_APP_KEY: str(),
   FB_APP_SECRET: str(),
   HOST: str(),
-  GOOGLE_API_KEY: str({ default: '' }),
-  EPSILON: num({ default: 0.00003 })
+  GOOGLE_API_KEY: str({ default: '' })
 })
 
 module.exports = env
