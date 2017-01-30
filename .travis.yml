@@ -15,6 +15,9 @@ deploy:
     branch: master
 services:
   - postgresql
+addons:
+  # default postgres version is 9.1, which lacks the features we need
+  postgresql: "9.4"
 before_script:
   - npm run lint
   - psql -c 'create database travis_dev;' -U postgres
