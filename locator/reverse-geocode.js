@@ -14,7 +14,7 @@ function reverseGeocode(lat, lng) {
   return request(reqOpts)
     .then(JSON.parse)
     .then(res => {
-      if (res.status !== 'OK') {
+      if (res.status !== 'OK' && res.status !== 'ZERO_RESULTS') {
         throw new Error(JSON.stringify(res, null, 2))
       }
       return res.results[0]
