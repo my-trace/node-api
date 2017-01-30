@@ -10,7 +10,7 @@ const reverseGeocode = require('./reverse-geocode')
 const EPSILON = 0.00003
 const DURATION_LIMIT = 500000
 
-const getUsers = Promise.coroutine(function* (knex, date) {
+const checkUsers = Promise.coroutine(function* (knex, date) {
   // get a list of all the users
   // omg ALL of them? yes all of them. deal with it
   const users = yield knex('accounts')
@@ -87,13 +87,24 @@ const clusterPoints = curry(Promise.coroutine(function* (knex, date, user) {
       return reverseGeocode(center.lat, center.lng)
     })
 
+    // sometimes we get no results from the API, soo there are some nulls in here. lets remove those from the array
+    // along with the cluster of points for which the API call was made
+    for (let i = places.length - 1; i >= 0; i--) {
+      if (!places[i]) {
+        places.splice(i, 1)
+        clusters.splice(i, 1)
+      }
+    }
+
     // the cross linking table rows
-    const links = places.map((place, i) => ({
-      account_id: user.id,
-      place_id: place.id,
-      duration: clusters[i].duration,
-      started_at: clusters[i].startedAt()
-    }))
+    const links = places.map((place, i) => {
+      return {
+        account_id: user.id,
+        place_id: place.id,
+        duration: clusters[i].duration,
+        started_at: clusters[i].startedAt()
+      }
+    })
 
     // first get only the unique places, then map to the table rows
     let uniqPlaces = chain(places).uniqBy('id').map(place => ({
@@ -130,6 +141,8 @@ const clusterPoints = curry(Promise.coroutine(function* (knex, date, user) {
   }
 }), 3)
 
+module.exports = checkUsers
+
 // just kick it off in this file.
 // eventually this will be scheduled daily
 if (!module.parent) {
@@ -137,7 +150,7 @@ if (!module.parent) {
     client: 'pg',
     connection: env.PG_URL
   })
-  getUsers(knex, new Date)
+  checkUsers(knex, new Date)
   .catch(err => {
     console.error(err)
     process.exit(1)
