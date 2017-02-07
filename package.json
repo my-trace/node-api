@@ -4,7 +4,7 @@
   "description": "web API for mytrace",
   "main": "server/index.js",
   "engines": {
-    "node": ">=6.0.0"
+    "node": "6.9.1"
   },
   "scripts": {
     "start": "node server/index.js",

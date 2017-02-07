@@ -9,6 +9,7 @@ const Grant = require('grant-koa')
 const env = require('../env')
 const userCtrl = require('./controllers/user')
 const pointCtrl = require('./controllers/point')
+const placesCtrl = require('./controllers/place')
 const facebook = require('./services/facebook')
 
 function start() {
@@ -48,6 +49,8 @@ function start() {
 
   router.get('/points', facebook.auth, pointCtrl.index)
   router.post('/points', facebook.auth, pointCtrl.create)
+
+  router.get('/places', facebook.auth, placesCtrl.index)
 
   app.use(router.routes())
   app.use(router.allowedMethods())
