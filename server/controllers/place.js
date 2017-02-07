@@ -1,5 +1,7 @@
 const Place = require('../models/place')
 
+DEFAULT_FETCH_START = 7 // number of days
+
 exports.index = function* () {
   const now = this.app.context.now
   const logger = this.app.context.logger
@@ -8,7 +10,7 @@ exports.index = function* () {
     'msg': 'fetching places',
     'user_id': this.userId,
   })
-  let lower = parseInt(this.query.from) || now() - 7 * 24 * 60 * 60 * 1000 // one week ago
+  let lower = parseInt(this.query.from) || now() - DEFAULT_FETCH_START * 24 * 60 * 60 * 1000 // one week ago
   let upper = parseInt(this.query.until) || now()
   if (upper < lower) {
     throw new Error('upper bound cannot be greater than lower bound')

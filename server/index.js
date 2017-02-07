@@ -50,7 +50,7 @@ function start() {
   router.get('/points', facebook.auth, pointCtrl.index)
   router.post('/points', facebook.auth, pointCtrl.create)
 
-  router.get('/places', placesCtrl.index)
+  router.get('/places', facebook.auth, placesCtrl.index)
 
   app.use(router.routes())
   app.use(router.allowedMethods())
