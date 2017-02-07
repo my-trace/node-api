@@ -1,6 +1,6 @@
 const Place = require('../models/place')
 
-DEFAULT_FETCH_START = 7 // number of days
+const DEFAULT_FETCH_START = 7 // number of days
 
 exports.index = function* () {
   const now = this.app.context.now
