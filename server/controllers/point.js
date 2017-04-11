@@ -1,12 +1,17 @@
 const Point = require('../models/point')
+let get_timestamp_bounds = require('../../server/util/points_utils')
 
 exports.create = function* () {
   const knex = this.app.context.db
   const logger = this.app.context.logger
+  let starting_created_at, ending_created_at = get_timestamp_bounds(this.request.body)
+
   logger.info({
     'method': 'controllers.point.create',
     'msg': 'saving points',
     'user_id': this.userId,
+    'starting_created_at': starting_created_at,
+    'ending_created_at': ending_created_at,
   })
   try {
     yield Point.bulkInsert(knex, this.request.body, this.userId, this)

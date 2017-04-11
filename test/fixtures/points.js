@@ -1,3 +1,4 @@
+// locations from points database
 module.exports = [
   {
     id: 'f333bfd0-bd02-11e6-8a04-4304b2532d48',
