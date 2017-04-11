@@ -8,4 +8,4 @@ test('get timestamp bounds', t => {
 
   t.is(bounds[0].getTime(), (new Date(mobile_points[0]['timestamp']).getTime())) 
   t.is(bounds[1].getTime(), (new Date(mobile_points[3]['timestamp']).getTime())) 
-});
+})

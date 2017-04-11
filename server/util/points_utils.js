@@ -6,4 +6,4 @@ function get_timestamp_bounds(locations) {
   return [new Date(min_timestamp), new Date(max_timestamp)]
 }
 
-module.exports = get_timestamp_bounds;
+module.exports = get_timestamp_bounds
