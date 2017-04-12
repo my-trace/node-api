@@ -26,12 +26,14 @@ exports.create = function* () {
       'method': 'controllers.point.create',
       'msg': 'error saving points',
       'user_id': this.userId,
+      'error': err,
     })
     this.status = 400
   }
 }
 
-exports.createOne = function* () {
+// for react native
+exports.createRN = function* () {
   const knex = this.app.context.db
   const logger = this.app.context.logger
   this.user_id = null
@@ -39,23 +41,44 @@ exports.createOne = function* () {
     'method': 'controllers.point.create',
     'msg': 'saving point',
     'user_id': this.userId,
-    'created_at': this.request.body.timestamp,
+    'created_at': this.request.body.location.timestamp,
   })
+
+  console.log('mapping')
+  let points = this.request.body.location.map(mapRNPointToIOS)
+  this.userId = 'c2e07d98-a6c3-4ac5-a515-4c7145b29f38'
   try {
-    yield Point.insert(knex, this.request.body, this.userId, this)
+    yield Point.bulkInsert(knex, points, this.userId, this)
     logger.info({
       'method': 'controllers.point.create',
       'msg': 'successfully saved points',
       'user_id': this.userId,
     })
-    this.status = 201  
+    this.status = 301 // change to 200 later  
   } catch (err) {
     logger.error({
       'method': 'controllers.point.create',
       'msg': 'error saving points',
       'user_id': this.userId,
+      'error': err,
     })
+    console.log(err);
+    
     this.status = 400
+  }
+}
+
+// use for mapping points generate on reaact native app to ios so that bulk insert code can be used
+function mapRNPointToIOS(location) {
+  return {
+    uuid: location.uuid,
+    latitude: location.coords.latitude,
+    longitude: location.coords.longitude,
+    altitude: location.coords.altitude,
+    floorLevel: null,
+    verticalAccuracy: location.coords.altitude_accuracy,
+    horizontalAccuracy: location.coords.accuracy,
+    timestamp: Date.parse(location.timestamp), // needs to be in ms
   }
 }
 
