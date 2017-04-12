@@ -12,6 +12,28 @@ Point.bulkGet = function(knex, account_id, lower, upper) {
   return knex('points').select().where({ account_id }).whereBetween('created_at', [ lower, upper ])
 }
 
+Point.insert = Promise.coroutine(function* (knex, point, userId, ctx) {
+  console.log('inserting', userId, point)
+  let location = point.location
+  // let account_id = 'c2e07d98-a6c3-4ac5-a515-4c7145b29f38'
+  let temp = {
+    id: location.uuid,
+    lat: location.coords.latitude,
+    lng: location.coords.longitude,
+    alt: location.coords.altitude,
+    floor_level: null,
+    vertical_accuracy: location.coords.altitude_accuracy,
+    horizontal_accuracy: location.coords.accuracy,
+    account_id: null,
+    created_at: Date.parse(location.timestamp),
+  }
+  console.log('after')
+  console.log(temp)
+  ctx.throw(400)
+  yield 
+  // yield knex('points').insert()
+})
+
 // insert a bunch of points
 Point.bulkInsert = Promise.coroutine(function* (knex, points, userId, ctx) {
   // make it one big, flat array so that the knex library can interpolate the values. it expects an array

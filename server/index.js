@@ -49,6 +49,7 @@ function start() {
 
   router.get('/points', facebook.auth, pointCtrl.index)
   router.post('/points', facebook.auth, pointCtrl.create)
+  router.post('/point', pointCtrl.createOne)
 
   router.get('/places', facebook.auth, placesCtrl.index)
 
