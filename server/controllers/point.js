@@ -31,6 +31,35 @@ exports.create = function* () {
   }
 }
 
+exports.createOne = function* () {
+  const knex = this.app.context.db
+  const logger = this.app.context.logger
+  this.user_id = null
+  logger.info({
+    'method': 'controllers.point.create',
+    'msg': 'saving point',
+    'user_id': this.userId,
+    'created_at': this.request.body.timestamp,
+  })
+  try {
+    yield Point.insert(knex, this.request.body, this.userId, this)
+    logger.info({
+      'method': 'controllers.point.create',
+      'msg': 'successfully saved points',
+      'user_id': this.userId,
+    })
+    this.status = 201  
+  } catch (err) {
+    logger.error({
+      'method': 'controllers.point.create',
+      'msg': 'error saving points',
+      'user_id': this.userId,
+    })
+    this.status = 400
+  }
+}
+
+
 exports.index = function* () {
   const now = this.app.context.now
   let lower = parseInt(this.query.from) || now() - 7 * 24 * 60 * 60 * 1000 // one week ago
