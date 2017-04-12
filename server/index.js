@@ -49,7 +49,7 @@ function start() {
 
   router.get('/points', facebook.auth, pointCtrl.index)
   router.post('/points', facebook.auth, pointCtrl.create)
-  router.post('/point', pointCtrl.createOne)
+  router.post('/point', pointCtrl.createRN) // for react native endpoint
 
   router.get('/places', facebook.auth, placesCtrl.index)
 
