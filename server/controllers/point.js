@@ -44,7 +44,6 @@ exports.createRN = function* () {
     'created_at': this.request.body.location.timestamp,
   })
 
-  console.log('mapping')
   let points = this.request.body.location.map(mapRNPointToIOS)
   this.userId = 'c2e07d98-a6c3-4ac5-a515-4c7145b29f38'
   try {
@@ -62,8 +61,7 @@ exports.createRN = function* () {
       'user_id': this.userId,
       'error': err,
     })
-    console.log(err);
-    
+
     this.status = 400
   }
 }

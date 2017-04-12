@@ -14,7 +14,6 @@ Point.bulkGet = function(knex, account_id, lower, upper) {
 
 // inserts from react native app (vs native)
 // Point.insert = Promise.coroutine(function* (knex, points, userId, ctx) {
-//   console.log('inserting', userId, point)
 //   let locations = point.location
 //   // let account_id = 'c2e07d98-a6c3-4ac5-a515-4c7145b29f38'
 //   let serverPoints mapMobileToServer(location)
@@ -46,7 +45,6 @@ Point.bulkInsert = Promise.coroutine(function* (knex, points, userId, ctx) {
   })
   .map(d => d || null)
 
-  console.log('hello');
   // build up the parameter string
   let tuple = Array(9).fill('?')
   // these things need type conversions
@@ -56,7 +54,6 @@ Point.bulkInsert = Promise.coroutine(function* (knex, points, userId, ctx) {
   tuple[8] = '?::timestamp'
   tuple = '(' + tuple.join(', ') + ')'
   const table = Array(points.length).fill(tuple).join(',\n')
-  console.log('wow', flatPoints.slice(0,9))
   // this query will remove duplicates (both within the new points and between the new and old points)
   // only inserting points where the IDs do not already exist in the DB
   yield knex.raw(`
@@ -73,19 +70,19 @@ Point.bulkInsert = Promise.coroutine(function* (knex, points, userId, ctx) {
   `, flatPoints)
 })
 
-function mapRNToServerPoint(location) {
-  return {
-    id: location.uuid,
-    lat: location.coords.latitude,
-    lng: location.coords.longitude,
-    alt: location.coords.altitude,
-    floor_level: null,
-    vertical_accuracy: location.coords.altitude_accuracy,
-    horizontal_accuracy: location.coords.accuracy,
-    account_id: null,
-    created_at: Date.parse(location.timestamp),
-  }
-}
+// function mapRNToServerPoint(location) {
+//   return {
+//     id: location.uuid,
+//     lat: location.coords.latitude,
+//     lng: location.coords.longitude,
+//     alt: location.coords.altitude,
+//     floor_level: null,
+//     vertical_accuracy: location.coords.altitude_accuracy,
+//     horizontal_accuracy: location.coords.accuracy,
+//     account_id: null,
+//     created_at: Date.parse(location.timestamp),
+//   }
+// }
 
 module.exports = Point
 
