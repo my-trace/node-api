@@ -34,6 +34,7 @@ exports.create = function* () {
 
 // for react native
 exports.createRN = function* () {
+  console.log('hello')
   const knex = this.app.context.db
   const logger = this.app.context.logger
   this.user_id = null
@@ -53,7 +54,7 @@ exports.createRN = function* () {
       'msg': 'successfully saved points',
       'user_id': this.userId,
     })
-    this.status = 301 // change to 200 later  
+    this.status = 200 // change to 200 later  
   } catch (err) {
     logger.error({
       'method': 'controllers.point.create',
