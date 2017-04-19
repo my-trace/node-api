@@ -37,12 +37,17 @@ exports.createRN = function* () {
   console.log('hello')
   const knex = this.app.context.db
   const logger = this.app.context.logger
+  let firstTimestamp = this.request.body.location[0].timestamp
+  let lastTimestamp = this.request.body.location[this.request.body.location.length - 1].timestamp
   this.user_id = null
+
+
   logger.info({
     'method': 'controllers.point.create',
     'msg': 'saving point',
     'user_id': this.userId,
-    'created_at': this.request.body.location.timestamp,
+    'starting_created_at': firstTimestamp,
+    'ending_created_at': lastTimestamp,
   })
 
   let points = this.request.body.location.map(mapRNPointToIOS)
